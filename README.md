@@ -1,34 +1,34 @@
-# Модуль фитнес-трекера.
+# Fitness tracker module.
 
-## Описание
-Программный модуль для обработки данных фитнес-трекера, который расчитывает и отображает
-полную информации о тренировках по данным от блока датчиков.
+## Description
+Software module for fitness tracker data processing, which calculates and displays
+complete workout information based on the data from the sensor unit.
 
-## Функциональность
-Модуль выполняет следующие функции:
-- принимает от блока датчиков информацию о прошедшей тренировке
-- определяет вид тренировки
-- рассчитывает результаты тренировки
-- выводит информационное сообщение о результатах тренировки
+## Functionality
+The module performs the following functions:
+- receives information about the past training from the sensor unit
+- determines the type of training
+- calculates training results
+- displays an information message about the training results
 
-## Входные данные
-Блок датчиков фитнес-трекера передаёт пакеты данных в виде кортежа, **первый** элемент которого —
-кодовое обозначение прошедшей тренировки, **второй** — список показателей полученных от датчиков устройства.
+## Input data
+The sensor unit of the fitness tracker transmits data packets in the form of a tuple,
+the **first** element of which is code of the past workout, **second** - the list of indicatorsreceived from the device sensors.
 
-### Последовательность данных в принимаемых пакетах:
-**Плавание**
-- Код тренировки: `SWM`.
-- Элементы списка: количество гребков, время в часах, вес пользователя, длина бассейна, сколько раз пользователь переплыл бассейн.
+### The sequence of data in the received packets:
+**Swimming**
+- Training code: `SWM`.
+- List items: number of strokes, time in hours, user weight, pool length, how many times the user swam over the pool.
 
-**Бег**
-- Код тренировки: `RUN`.
-- Элементы списка: количество шагов, время тренировки в часах, вес пользователя.
+**Run**.
+- Training code: `RUN`.
+- List items: number of steps, training time in hours, user weight.
 
-**Спортивная ходьба**
-- Код тренировки: `WLK`.
-- Элементы списка: количество шагов, время тренировки в часах, вес пользователя, рост пользователя.
+**Sportive Walking**
+- Training code: `WLK`.
+- List items: number of steps, training time in hours, user weight, user height.
 
-*Пример входных данных*
+*Example of input data*
 ```python
 packages = [
      ('SWM', [720, 1, 80, 25, 40]),
@@ -37,115 +37,115 @@ packages = [
  ] 
 ```
 
-## Базовый класс
+## Basic Class
 ```python
 class Training
 ```
-**Свойства класса**
+**Class Properties**
 
-* action - основное считываемое действие во время тренировке (шаг - бег, ходьба; гребок - плавание);
-* duration - длительность тренировки;
-* weight - вес спортсмена;
-* M_IN_KM = 1000 - константа для перевода значений из метров в километры. Её значение — 1000.
-* LEN_STEP - расстояние, которое спортсмен преодолевает за один шаг или гребок. Один шаг — это  `0.65` метра, один гребок
-при плавании — `1.38` метра.
+* action - the main readable action during training (step - running, walking; paddling - swimming);
+* duration - training duration;
+* weight - athlete's weight;
+* M_IN_KM = 1000 - is a constant for converting values from meters to kilometers. Its value is 1000.
+* LEN_STEP - the distance the athlete covers in one step or stroke. One step is `0.65` meters,
+one stroke in swimming is 1.38 meters.
 
-**Методы класса**
+**Class methods**
 
-* get_distance() - метод возвращает значение дистанции приодоленной за тренировку
+* get_distance() - method returns the value of the distance covered during the training
 ```python
-# базовая формула расчета
-шаг * LEN_STEP / M_IN_KM
+# basic calculation formula
+step * LEN_STEP / M_IN_KM
 ```
-* get_mean_speed() - метод возвращает значение средней скорости движения во время тренировки
-* get_spent_calories() - метод возвращает число потраченных калорий
-* show_training_info() - метод возвращает объект возвращает объект класса сообщения
+* get_mean_speed() - method returns the value of the average speed during the training
+* get_spent_calories() - method returns the number of calories spent
+* show_training_info() - method returns an object of the message class
 
-## Классы наследники
-### Класс беговой тренировки
+## Inheritance classes
+### Running training class
 ```python
 class Running
 ```
-**Свойства класса**
-наследуются
+**Class Properties**
+inherited
 
-**Методы класса**
-Переопределен метод:
-`get_spent_calories()` - метод возвращает число потраченных калорий
+**Class methods**
+Overridden method:
+`get_spent_calories()` - method returns the number of calories spent
 ```python
-# формула расчета
-(18 * средняя_скорость - 20) * вес_спортсмена / M_IN_KM * время_тренировки_в_минутах
+# calculation formula
+(18 * speed - 20) * weight / M_IN_KM * duration
 ```
 
-### Класс спортивной ходьбы
+### Sportive walking Class
 ```python
 class SportsWalking
 ```
-**Свойства класса**
-Добавлено свойство *height* (рост)
+**Class Properties**
+Added property *height*
 
-**Методы класса**
-Переопределен метод:
-`get_spent_calories()` - метод возвращает число потраченных калорий
+**Class methods**
+Overridden method:
+`get_spent_calories()` - method returns the number of calories spent
 ```python
-# формула расчета
-(0.035 * вес + (скорость ** 2 // рост) * 0.029 * вес) * время_тренировки_в_минутах
+# calculation formula
+(0.035 * weight + (speed ** 2 // height) * 0.029 * weight) * duration
 ```
 
-### Класс тренировки в бассейне
+### Swimming training class
 ```python
 class Swimming
 ```
-**Свойства класса**
-Добавлены свойства:
-* *length_pool* - длина бассейна
-* *count_pool* - количество проплытых бассейнов
+**Class Properties**
+Added properties:
+* *length_pool* - pool length
+* *count_pool* - number of pools swum
 
-**Методы класса**
-Переопределены методы:
-`get_mean_speed()` - метод возвращает значение средней скорости движения во время тренировки
+**Class methods**
+Overridden method:
+`get_mean_speed()` - method returns the value of the average speed during the training
 ```python
-# формула расчета
-длина_бассейна * count_pool / M_IN_KM / время_тренеровки
+# calculation formula
+length_pool * count_pool / M_IN_KM / duration
 ```
-`get_spent_calories()` - метод возвращает число потраченных калорий
+`get_spent_calories()` -method returns the number of calories spent
 ```python
-# формула расчета
-(скорость + 1.1) * 2 * вес
+# calculation formula
+(speed + 1.1) * 2 * weight
 ```
-## Класс информационного сообщения
+## Class of information message
 ```python
 class InfoMessage
 ```
-**Свойства класса**
-* training_type - тип тренировки
-* duration - длительность тренировки
-* distance -дистанция преодоленная за тренировку
-* speed - средняя скорость движения во время движения
-* calories - потраченные за время тренировки килокалории
+**Class Properties**
+* training_type - type of training
+* duration - training duration
+* distance - distance covered per training session
+* speed - average speed of movement during movement
+* calories - calories spent during the workout
 
 
-**Методы класса**
-`get_message()` - метод возвращает строку сообщения:
+**Class methods**
+`get_message()` - method returns a message string:
 ```python
-# выводимое сообщение
-# все значения типа float округляются до 3 знаков после запятой
-'Тип тренировки: {training_type}; Длительность: {duration} ч.; Дистанция: {distance} км; Ср. скорость: {speed} км/ч; Потрачено ккал: {calories}'.
+# message output
+# all values of float type are rounded to 3 decimal places
+'Type of training: {training_type}; Duration: {duration} h.; Distance: {distance} km; Average speed: {speed} kph; Сalories burned: {calories}'.
 ```
 
-## Функции модуля
+## Module functions
 ```python
 def read_package()
 ```
-* Функция read_package() принимает на вход код тренировки и список её параметров.
-* Функция определяет тип тренировки и создает объект соответствующего класса,
-передав ему на вход параметры, полученные во втором аргументе.
+* The read_package() function takes as input the training code and its parameter list.
+* The function defines the type of training and creates an object of the corresponding class,
+by passing to it the parameters received in the second argument.
 
 ```python
 def main(training)
 ```
-Функция `main()` принимает на вход экземпляр класса `Training`.
-- При выполнении функции `main()`для этого экземпляра вызывается метод `show_training_info()`;
-результатом выполнения метода должен быть объект класса `InfoMessage`, его нужно сохранить в переменную `info`.
-- Для объекта `InfoMessage`, сохранённого в переменной `info`, должен быть вызван метод,
-который вернет строку сообщения с данными о тренировке; эту строку нужно передать в функцию `print()`.
+The `main()` function takes an instance of the `Training` class as input.
+- When the `main()` function is executed, the `show_training_info()` method is called for that instance;
+The result of the method should be an object of class `InfoMessage` and it should be saved in the variable `info`.
+- For the `InfoMessage` object saved in the `info` variable, the method, which will return a message string with
+training data; this string must be passed to the `print()` function.
